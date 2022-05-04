@@ -1,0 +1,433 @@
+[
+    {
+        "id": "alyasiry2019",
+        "DOI": "10.1287/trsc.2019.0905"
+    },
+    {
+        "id": "gschwind2015a",
+        "DOI": "10.1287/trsc.2014.0531"
+    },
+    {
+        "id": "gschwind2015b",
+        "DOI": "10.1016/j.ejor.2015.06.017"
+    },
+    {
+        "id": "gschwind2019",
+        "DOI": "10.1287/trsc.2018.0837"
+    },
+    {
+        "id": "barnhart1998",
+        "DOI": "10.1287/opre.46.3.316"
+    },
+    {
+        "id": "benders1962",
+        "DOI": "10.1007/BF01386316"
+    },
+    {
+        "id": "desrochers1992",
+        "DOI": "10.1287/opre.40.2.342"
+    },
+    {
+        "id": "desaulniers2020",
+        "DOI": "10.1287/trsc.2020.0988"
+    },
+    {
+        "id": "cherkesly2014",
+        "DOI": "10.1287/trsc.2014.0535"
+    },
+    {
+        "id": "codato2006",
+        "DOI": "10.1287/opre.1060.0286"
+    },
+    {
+        "id": "cordeau2006",
+        "DOI": "10.1287/opre.1060.0283"
+    },
+    {
+        "id": "cortes2010",
+        "DOI": "10.1016/j.ejor.2009.01.022"
+    },
+    {
+        "id": "cordeau2003",
+        "DOI": "10.1016/S0191-2615(02)00045-0"
+    },
+    {
+        "id": "dantzig1960",
+        "DOI": "10.1287/opre.8.1.101"
+    },
+    {
+        "id": "dumas1991",
+        "DOI": "10.1016/0377-2217(91)90319-q"
+    },
+    {
+        "id": "luo2019",
+        "DOI": "10.1287/trsc.2017.0772"
+    },
+    {
+        "id": "furtado2017",
+        "DOI": "10.1016/j.orl.2017.04.013"
+    },
+    {
+        "id": "he2018",
+        "DOI": "10.1007/978-3-319-93031-2_21"
+    },
+    {
+        "id": "hernandez-perez2004",
+        "DOI": "10.1016/j.dam.2003.09.013"
+    },
+    {
+        "id": "hooker2003",
+        "DOI": "10.1007/s10107-003-0375-9"
+    },
+    {
+        "id": "hunsaker2002",
+        "DOI": "10.1016/S0167-6377(02)00120-7"
+    },
+    {
+        "id": "xu2003",
+        "DOI": "10.1287/trsc.37.3.347.16044"
+    },
+    {
+        "id": "liu2015",
+        "DOI": "10.1016/j.trb.2015.05.009"
+    },
+    {
+        "id": "ropke2007",
+        "DOI": "10.1002/net.20177"
+    },
+    {
+        "id": "ropke2009",
+        "DOI": "10.1287/trsc.1090.0272"
+    },
+    {
+        "id": "savelsbergh1992",
+        "DOI": "10.1287/ijoc.4.2.146"
+    },
+    {
+        "id": "savelsbergh1995",
+        "DOI": "10.1287/trsc.29.1.17"
+    },
+    {
+        "id": "savelsbergh1998",
+        "DOI": "10.1287/opre.46.4.474"
+    },
+    {
+        "id": "sippel2019",
+        "type": "thesis",
+        "genre": "Honours thesis",
+        "title": "An Exact Algorithm for the ER-DARP",
+        "issued": { "date-parts": [[2019]] },
+        "publisher": "University of Queensland",
+        "author": [
+            {
+                "family": "Lucas",
+                "given": "Sippel"
+            }
+        ]
+    },
+    {
+        "type": "article",
+        "title": "Branch-and-Cut for the Active-Passive Vehicle Routing Problem",
+        "number": "1915",
+        "issued": { "date-parts": [[2019, 12]] },
+        "publisher": "Gutenberg School of Management and Economics, Johannes Gutenberg-Universität Mainz",
+        "author": [
+            {
+                "family": "Christian",
+                "given": "Tilk"
+            },
+            {
+                "family": "Michael",
+                "given": "Forbes"
+            }
+        ],
+        "id": "tilk2019",
+        "URL": "https://ideas.repec.org/p/jgu/wpaper/1915.html"
+    },
+    {
+        "id": "schrotenboer2019",
+        "DOI": "10.1287/trsc.2018.0880"
+    },
+    {
+        "id": "tang2010",
+        "DOI": "10.1016/j.orl.2010.05.002"
+    },
+    {
+        "id": "boland2017",
+        "DOI": "10.1287/opre.2017.1624"
+    },
+    {
+        "id": "veenstra2017",
+        "DOI": "10.1016/j.cor.2016.07.014"
+    },
+    {
+        "id": "vu2019",
+        "DOI": "10.1287/trsc.2019.0911"
+    },
+    {
+        "id": "miller1960",
+        "DOI": "10.1145/321043.321046"
+    },
+    {
+        "id": "munari2017",
+        "DOI": "10.48550/arXiv.1606.01935"
+    },
+    {
+        "id": "cordeau2007",
+        "DOI": "10.1007/s10479-007-0170-8"
+    },
+    {
+        "id": "haugland2010",
+        "DOI": "10.1007/978-3-642-14355-7_18"
+    },
+    {
+        "id": "firat2011",
+        "DOI": "10.1016/j.orl.2010.11.004"
+    },
+    {
+        "id": "zhang2015",
+        "DOI": "10.1016/j.omega.2015.01.011"
+    },
+    {
+        "id": "detti2017",
+        "DOI": "10.1016/j.omega.2016.08.008"
+    },
+    {
+        "id": "melachrinoudis2007",
+        "DOI": "10.1016/j.cor.2005.03.024"
+    },
+    {
+        "id": "ropke2006",
+        "type": "thesis",
+        "genre": "Doctoral dissertation",
+        "title": "Heuristic and exact algorithms for vehicle routing problems",
+        "issued": { "date-parts" : [[2006]] },
+        "publisher": "University of Copenhagen",
+        "author": [
+            {
+                "family": "Stefan",
+                "given": "Ropke"
+            }
+        ],
+        "custom" : {
+            "bib_db" : { 
+                "fetch" : false
+            }
+        }
+    },
+    {
+        "id": "jepsen2008",
+        "DOI": "10.1287/opre.1070.0449"
+    },
+    {
+        "id": "braekers2014",
+        "DOI": "10.1016/j.trb.2014.05.007"
+    },
+    {
+        "id": "chassaing2016",
+        "DOI": "10.1016/j.engappai.2015.10.002"
+    },
+    {
+        "id": "parragh2013",
+        "DOI": "10.1016/j.cor.2012.08.004"
+    },
+    {
+        "id": "dellaert2018",
+        "DOI": "10.1287/trsc.2018.0844"
+    },
+    {
+        "id": "rey2019",
+        "DOI": "10.1287/trsc.2019.0896"
+    },
+    {
+        "id": "lopes2007",
+        "DOI": "10.1016/j.ejor.2005.11.001"
+    },
+    {
+        "id": "hintsch2020",
+        "DOI": "10.1016/j.ejor.2019.07.019"
+    },
+    {
+        "id": "riedler2018",
+        "DOI": "10.1016/j.cor.2018.03.008"
+    },
+    {
+        "id": "rist2021",
+        "DOI": "10.1287/trsc.2021.1044"
+    },
+    {
+        "id": "harjunkoski2000",
+        "DOI": "10.1016/s0098-1354(00)00470-1"
+    },
+    {
+        "id": "thorsteinsson2001",
+        "DOI": "10.1007/3-540-45578-7_2"
+    },
+    {
+        "id": "berbeglia2011",
+        "DOI": "10.1287/trsc.1100.0336"
+    },
+    {
+        "id": "correa2007",
+        "DOI": "10.1016/j.cor.2005.07.004"
+    },
+    {
+        "id": "fachini2020",
+        "DOI": "10.1016/j.cie.2020.106641"
+    },
+    {
+        "id": "lam2016",
+        "DOI": "10.1007/s10601-016-9241-2"
+    },
+    {
+        "id": "homsi2020",
+        "DOI": "10.1016/j.ejor.2019.11.068"
+    },
+    {
+        "id": "kahn1962",
+        "DOI": "10.1145/368996.369025"
+    },
+    {
+        "id": "kelley1959",
+        "DOI": "10.1145/1460299.1460318"
+    },
+    {
+        "id": "rekiek2006",
+        "DOI": "10.1016/j.engappai.2005.12.013"
+    },
+    {
+        "id": "beaudry2010",
+        "DOI": "10.1007/s00291-008-0135-6"
+    },
+    {
+        "id": "souza2020",
+        "DOI": "10.1007/s11590-020-01698-6"
+    },
+    {
+        "id": "sampaio2020",
+        "DOI": "10.1002/net.21963"
+    },
+    {
+        "id": "drexl2020",
+        "DOI": "10.1007/s10100-020-00690-w"
+    },
+    {
+        "id": "fischetti2016",
+        "DOI": "10.1287/mnsc.2016.2461"
+    },
+    {
+        "id": "ascheuer2000",
+        "DOI": "10.1002/1097-0037(200009)36:2<69::AID-NET1>3.0.co;2-q"
+    },
+    {
+        "id": "meisel2014",
+        "DOI": "10.1007/s00291-012-0310-7"
+    },
+    {
+        "id": "tilk2018",
+        "DOI": "10.1287/trsc.2016.0730"
+    },
+    {
+        "id": "irnich2014",
+        "DOI": "10.1137/1.9781611973594.ch1"
+    },
+    {
+        "id": "lahyani2015",
+        "DOI": "10.1016/j.ejor.2014.07.048"
+    },
+    {
+        "id": "rahmaniani2017",
+        "DOI": "10.1016/j.ejor.2016.12.005"
+    },
+    {
+        "id": "cheung2008",
+        "DOI": "10.1016/j.tre.2007.07.009"
+    },
+    {
+        "id": "drexl2013",
+        "DOI": "10.1016/j.ejor.2012.12.015"
+    },
+    {
+        "id": "chao2012",
+        "DOI": "10.1016/S0305-0548(00)00056-3"
+    },
+    {
+        "id": "semet1993",
+        "DOI": "10.1007/BF02023006"
+    },
+    {
+        "id": "bodin2000",
+        "DOI": "10.1007/978-1-4615-4495-1_11"
+    },
+    {
+        "id": "tan2006",
+        "DOI": "10.1016/j.ejor.2004.11.019"
+    },
+    {
+        "id": "smilowitz2006",
+        "DOI": "10.1080/07408170500436898"
+    },
+    {
+        "id": "drexl2014",
+        "DOI": "10.1002/net.21526"
+    },
+    {
+        "id": "soares2019",
+        "DOI": "10.1016/j.ejor.2019.02.025"
+    },
+    {
+        "type": "thesis",
+        "genre": "Doctoral dissertation",
+        "title": "On some generalized routing problems",
+        "issued": { "date-parts": [[2007]] },
+        "publisher": "Rheinisch-Westfälische Technische Hochschule Aachen",
+        "author": [
+            {
+                "family": "Michael",
+                "given": "Drexl"
+            }
+        ],
+        "id": "drexl2007"
+    },
+    {
+        "id": "baldacci2006",
+        "DOI": "10.1016/j.cor.2005.02.023"
+    },
+    {
+        "id": "raucq2019",
+        "DOI": "10.1007/s41604-019-00013-6"
+    },
+    {
+        "id": "bodin2000b",
+        "DOI": "10.1287/trsc.34.3.271.12301"
+    },
+    {
+        "id": "voigt2021",
+        "DOI": "10.1002/net.22045"
+    },
+    {
+        "id": "masson2013",
+        "DOI": "10.1016/j.orl.2013.01.007"
+    },
+    {
+        "id": "masson2014",
+        "DOI": "10.1016/j.cor.2013.07.020"
+    },
+    {
+        "id": "grangier2016",
+        "DOI": "10.1016/j.ejor.2016.03.040"
+    },
+    {
+        "type": "report",
+        "title": "Generic Heuristic for Vehicle Routing Problems with Multiple Synchronization Constraints",
+        "issued": { "date-parts": [[2014]] },
+        "publisher": "Logistics Management, Gutenberg School of Management and Economics, Johannes Gutenberg University",
+        "author": [
+            {
+                "family": "Michael",
+                "given": "Drexl"
+            }
+        ],
+        "id": "drexl2014b"
+    }
+]
