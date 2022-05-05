@@ -19,6 +19,9 @@ posix-cli-utils = { git = "https://github.com/ykrist/posix-cli-utils.git" }
 clap = { version = "3.1.15", features = ["derive"] }
 jsonschema = "0.16.0"
 lazy_static = "1.4.0"
+governor = "0.4.2"
+assert_cmd = "2.0.4"
+unicode-normalization = "0.1.19"
 
 
 [[bin]]

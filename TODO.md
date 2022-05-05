@@ -16,6 +16,7 @@ curl -H "Accept: application/vnd.citationstyles.csl+json" https://api.crossref.o
 - `fetch` : the "fill" command
 - `clear` : clear the cache (subcaches?)
 - `verify` : validate the input JSON
+- `example` : Entry examples for different entry types (article, thesis, conference paper etc)
 
 ## Unicode to Latex
 
