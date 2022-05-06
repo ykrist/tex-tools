@@ -22,6 +22,9 @@ lazy_static = "1.4.0"
 governor = "0.4.2"
 assert_cmd = "2.0.4"
 unicode-normalization = "0.1.19"
+dirs = "4.0.0"
+urlencoding = "2.1.0"
+futures = "0.3.21"
 
 
 [[bin]]

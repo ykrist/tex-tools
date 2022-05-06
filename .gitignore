@@ -4,3 +4,4 @@
 !tests/db.json
 Cargo.lock
 /venv
+scrap.*

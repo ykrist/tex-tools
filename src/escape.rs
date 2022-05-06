@@ -1,8 +1,7 @@
 use std::fmt::Display;
 
-
 pub struct Utf8ToTex<'a> {
-    original: &'a str
+    original: &'a str,
 }
 
 impl<'a> Display for Utf8ToTex<'a> {
