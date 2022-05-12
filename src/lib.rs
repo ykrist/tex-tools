@@ -16,6 +16,9 @@ mod crossref;
 pub use crossref::*;
 use serde::{de::DeserializeOwned, Serialize};
 
+mod biblatex;
+
+
 use posix_cli_utils::IoContext;
 
 pub fn read_json<T, P>(path: P) -> Result<T>

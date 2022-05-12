@@ -1,0 +1,13 @@
+afterword
+bookauthor
+date
+editora
+editorb
+editorc
+foreword
+holder
+introduction
+isrn
+language
+origlanguage
+translator
