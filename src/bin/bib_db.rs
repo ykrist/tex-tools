@@ -390,7 +390,7 @@ mod fetch {
         }
 
         if let Some(path) = dump_raw {
-            write_json(path, raw.unwrap())?;
+            write_json_pretty(path, raw.unwrap())?;
         }
 
         info!(
@@ -441,6 +441,19 @@ mod fetch {
         Ok(())
     }
 
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, ArgEnum)]
+    pub enum OutputFormat {
+        Json,
+    }
+
+    impl OutputFormat {
+        pub fn suffix(&self) -> &'static str {
+            match self {
+                OutputFormat::Json => "json",
+            }
+        }
+    }
+
     #[derive(Args)]
     pub struct ClArgs {
         /// Input file (CSL JSON format)
@@ -453,6 +466,24 @@ mod fetch {
         /// Dump the raw JSON retrieved, prior to cleaning
         #[clap(long, value_name = "PATH")]
         dump_raw: Option<PathBuf>,
+
+        /// Output format
+        #[clap(arg_enum, short='f', default_value_t=OutputFormat::Json)]
+        format: OutputFormat,
+
+        /// Output path. Default is same name as input file with "-filled" appended to the filename stem.
+        #[clap(short = 'o')]
+        output: Option<PathBuf>,
+    }
+
+    fn output_json(db: &Vec<CslEntry>, path: Option<impl AsRef<Path>>) -> Result<()> {
+        if let Some(path) = path {
+            write_json_pretty(path, &db)
+        } else {
+            let out = std::io::stdout();
+            serde_json::to_writer_pretty(out.lock(), &db)?;
+            Ok(())
+        }
     }
 
     pub fn main(mut args: ClArgs) -> Result<()> {
@@ -464,6 +495,18 @@ mod fetch {
         info!(n_entries = db.len(), "DB read successfully");
 
         fetch_and_merge(&args, &mut db)?;
+
+        let output_file = args.output.take().unwrap_or_else(|| {
+            let mut n = args.input.file_stem().expect("no file name").to_os_string();
+            n.push("-filled.");
+            n.push(args.format.suffix());
+            args.input.with_file_name(n)
+        });
+
+        match args.format {
+            OutputFormat::Json => output_json(&db, Some(output_file))?,
+        }
+
         Ok(())
     }
 
@@ -501,11 +544,6 @@ mod validate {
 
     fn try_find_id<'a>(entry: &'a Value) -> Option<&'a Value> {
         entry.as_object()?.get("id")
-    }
-
-    #[inline]
-    pub fn ignore_none(_: &ValidationError) -> bool {
-        false
     }
 
     pub fn ignore_missing_type(e: &ValidationError) -> bool {
@@ -636,7 +674,7 @@ mod example {
     #[derive(Args)]
     pub struct ClArgs {}
 
-    pub fn main(args: ClArgs) -> Result<()> {
+    pub fn main(_args: ClArgs) -> Result<()> {
         todo!()
     }
 }

@@ -18,7 +18,6 @@ use serde::{de::DeserializeOwned, Serialize};
 
 mod biblatex;
 
-
 use posix_cli_utils::IoContext;
 
 pub fn read_json<T, P>(path: P) -> Result<T>
@@ -40,6 +39,17 @@ where
     let path = path.as_ref();
     let f = std::fs::File::create(path).context_write(&path)?;
     serde_json::to_writer(f, &val)?;
+    Ok(())
+}
+
+pub fn write_json_pretty<T, P>(path: P, val: T) -> Result<()>
+where
+    T: Serialize,
+    P: AsRef<Path>,
+{
+    let path = path.as_ref();
+    let f = std::fs::File::create(path).context_write(&path)?;
+    serde_json::to_writer_pretty(f, &val)?;
     Ok(())
 }
 
