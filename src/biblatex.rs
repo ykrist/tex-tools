@@ -380,7 +380,7 @@ pub mod entry {
         note,
         number,
         // origlanguage,
-        // pages,
+        pages,
         pubstate,
         series,
         subtitle,
