@@ -591,7 +591,7 @@ mod validate {
         for (doi, entry) in cache {
             let _s = error_span!("validate_cache", doi = &*doi).entered();
             let entry = JsonValue::Object(entry);
-            if !validate_entry(&entry, ignore_none) {
+            if !validate_entry(&entry, ignore_missing_id) {
                 ok = false;
                 if options.output.is_some() {
                     invalid.push(entry);
