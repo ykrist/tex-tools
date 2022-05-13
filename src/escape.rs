@@ -1,6 +1,7 @@
 use std::fmt::{Display, Error as FmtError, Formatter, Result as FmtResult, Write};
 use unicode_normalization::UnicodeNormalization;
 
+#[derive(Clone, Copy, Debug)]
 /// A lazily UTF8 to LaTeX escaped string. Call `.to_string()` or use [`Display`] to extract
 ///  the escaped string.
 pub struct Utf8ToTex<'a> {

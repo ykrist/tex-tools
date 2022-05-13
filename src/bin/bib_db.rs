@@ -143,8 +143,8 @@ mod cache {
 }
 
 mod fetch {
-    use std::num::NonZeroU32;
     use std::time::Duration;
+    use std::{num::NonZeroU32, path::Path};
 
     use super::*;
     use futures::future;
@@ -331,6 +331,7 @@ mod fetch {
     pub fn fetch_and_validate<'a>(
         options: &ClArgs,
         dois: impl IntoIterator<Item = &'a str>,
+        dump_raw: Option<impl AsRef<Path>>,
     ) -> Result<Vec<(&'a str, JsonValue)>> {
         let mut headers = header::HeaderMap::new();
         headers.insert(
@@ -362,11 +363,22 @@ mod fetch {
         let mut results = Vec::with_capacity(fetch_results.len());
         let count_total = fetch_results.len();
 
+        let mut raw = if dump_raw.is_some() {
+            Some(Vec::with_capacity(fetch_results.len()))
+        } else {
+            None
+        };
+
         for (doi, json) in fetch_results {
             let mut json = match json {
                 Some(v) => v,
                 None => continue,
             };
+
+            if let Some(raw) = &mut raw {
+                raw.push(json.clone());
+            }
+
             clean_json(&mut json);
             let _s = error_span!("validate", doi).entered();
 
@@ -374,10 +386,13 @@ mod fetch {
                 continue;
             }
 
-            // validate::validate_entry(&json, validate::ignore_missing_id);
-
             results.push((doi, json))
         }
+
+        if let Some(path) = dump_raw {
+            write_json(path, raw.unwrap())?;
+        }
+
         info!(
             count_total,
             count_successful = results.len(),
@@ -407,7 +422,7 @@ mod fetch {
         if count > 0 {
             info!(count, "retrieving entries");
 
-            for (doi, json) in fetch_and_validate(options, to_fetch)? {
+            for (doi, json) in fetch_and_validate(options, to_fetch, options.dump_raw.as_ref())? {
                 cache.insert(doi.to_string(), json.unwrap_object());
             }
             cache.save()?;
@@ -434,6 +449,10 @@ mod fetch {
         /// Maximum number of requests allowed per second.
         #[clap(short = 'r', default_value_t = 20)]
         max_requests_per_sec: u32,
+
+        /// Dump the raw JSON retrieved, prior to cleaning
+        #[clap(long, value_name = "PATH")]
+        dump_raw: Option<PathBuf>,
     }
 
     pub fn main(mut args: ClArgs) -> Result<()> {
