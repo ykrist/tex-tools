@@ -1,6 +1,6 @@
 /target
 *.json
-!src/bin/*.json
+!src/bin/**/*.json
 !tests/db.json
 Cargo.lock
 /venv

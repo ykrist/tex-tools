@@ -12,11 +12,9 @@ pub use tracing::{
 mod escape;
 pub use escape::*;
 
-mod crossref;
-pub use crossref::*;
 use serde::{de::DeserializeOwned, Serialize};
 
-mod biblatex;
+pub mod biblatex;
 
 use posix_cli_utils::IoContext;
 

@@ -120,8 +120,8 @@
         "publisher": "University of Queensland",
         "author": [
             {
-                "family": "Lucas",
-                "given": "Sippel"
+                "given": "Lucas",
+                "family": "Sippel"
             }
         ]
     },
@@ -205,15 +205,10 @@
         "publisher": "University of Copenhagen",
         "author": [
             {
-                "family": "Stefan",
-                "given": "Ropke"
+                "given": "Stefan",
+                "family": "Ropke"
             }
-        ],
-        "custom" : {
-            "bib_db" : { 
-                "fetch" : false
-            }
-        }
+        ]
     },
     {
         "id": "jepsen2008",
@@ -383,8 +378,8 @@
         "publisher": "Rheinisch-Westfälische Technische Hochschule Aachen",
         "author": [
             {
-                "family": "Michael",
-                "given": "Drexl"
+                "given": "Michael",
+                "family": "Drexl"
             }
         ],
         "id": "drexl2007"
@@ -424,8 +419,8 @@
         "publisher": "Logistics Management, Gutenberg School of Management and Economics, Johannes Gutenberg University",
         "author": [
             {
-                "family": "Michael",
-                "given": "Drexl"
+                "given": "Michael",
+                "family": "Drexl"
             }
         ],
         "id": "drexl2014b"

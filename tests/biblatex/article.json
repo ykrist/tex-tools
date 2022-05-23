@@ -1,0 +1,45 @@
+{
+    "id": "barnhart1998",
+    "DOI": "10.1287/opre.46.3.316",
+    "language": "en",
+    "container-title": "Operations Research",
+    "publisher": "Institute for Operations Research and the Management Sciences (INFORMS)",
+    "issue": "3",
+    "container-title-short": "Operations Research",
+    "author": [
+      {
+        "given": "Cynthia",
+        "family": "Barnhart"
+      },
+      {
+        "given": "Ellis L.",
+        "family": "Johnson"
+      },
+      {
+        "given": "George L.",
+        "family": "Nemhauser"
+      },
+      {
+        "given": "Martin W. P.",
+        "family": "Savelsbergh"
+      },
+      {
+        "given": "Pamela H.",
+        "family": "Vance"
+      }
+    ],
+    "volume": "46",
+    "issued": {
+      "date-parts": [
+        [
+          1998,
+          6
+        ]
+      ]
+    },
+    "page": "316-329",
+    "source": "Crossref",
+    "URL": "http://dx.doi.org/10.1287/opre.46.3.316",
+    "title": "Branch-and-Price: Column Generation for Solving Huge Integer Programs",
+    "type": "article-journal"
+  }

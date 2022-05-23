@@ -7,14 +7,34 @@ use serde_json::Value as JsonValue;
 use std::path::PathBuf;
 use tex_tools::*;
 
+pub mod convert;
+pub mod csl_fields;
+
 type CslEntry = serde_json::Map<String, JsonValue>;
+
+fn json_type_name(s: &JsonValue) -> &'static str {
+    match s {
+        JsonValue::Array(_) => "array",
+        JsonValue::Object(_) => "object",
+        JsonValue::Null => "null",
+        JsonValue::Number(_) => "number",
+        JsonValue::String(_) => "string",
+        JsonValue::Bool(_) => "bool",
+    }
+}
 
 trait JsonExt {
     fn unwrap_array(self) -> Vec<JsonValue>;
     fn unwrap_object(self) -> serde_json::Map<String, JsonValue>;
-
     fn unwrap_string(self) -> String;
     fn unwrap_str(&self) -> &str;
+
+    fn expect_string(self) -> Result<String>;
+    fn expect_object(self) -> Result<serde_json::Map<String, JsonValue>>;
+    fn expect_array(self) -> Result<Vec<JsonValue>>;
+    fn expect_number(self) -> Result<serde_json::Number>;
+    fn expect_int(self) -> Result<i64>;
+    fn expect_uint(self) -> Result<u64>;
 }
 
 impl JsonExt for JsonValue {
@@ -52,6 +72,46 @@ impl JsonExt for JsonValue {
             JsonValue::String(v) => v.as_str(),
             other => panic!("expected string: {}", other),
         }
+    }
+
+    fn expect_string(self) -> Result<String> {
+        match self {
+            JsonValue::String(s) => Ok(s),
+            other => bail!("expected JSON string, not {}", json_type_name(&other)),
+        }
+    }
+
+    fn expect_object(self) -> Result<serde_json::Map<String, JsonValue>> {
+        match self {
+            JsonValue::Object(v) => Ok(v),
+            other => bail!("expected JSON object, not {}", json_type_name(&other)),
+        }
+    }
+
+    fn expect_array(self) -> Result<Vec<JsonValue>> {
+        match self {
+            JsonValue::Array(v) => Ok(v),
+            other => bail!("expected JSON array, not {}", json_type_name(&other)),
+        }
+    }
+
+    fn expect_number(self) -> Result<serde_json::Number> {
+        match self {
+            JsonValue::Number(v) => Ok(v),
+            other => bail!("expected JSON number, not {}", json_type_name(&other)),
+        }
+    }
+
+    fn expect_int(self) -> Result<i64> {
+        let n = self.expect_number()?;
+        n.as_i64()
+            .ok_or_else(|| anyhow!("cannot convert to integer: {}", n))
+    }
+
+    fn expect_uint(self) -> Result<u64> {
+        let n = self.expect_number()?;
+        n.as_u64()
+            .ok_or_else(|| anyhow!("cannot convert to unsigned integer: {}", n))
     }
 }
 

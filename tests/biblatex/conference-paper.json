@@ -1,0 +1,29 @@
+{
+    "id": "kelley1959",
+    "DOI": "10.1145/1460299.1460318",
+    "container-title": "Papers presented at the December 1-3, 1959, eastern joint IRE-AIEE-ACM computer conference on - IRE-AIEE-ACM '59 (Eastern)",
+    "title": "Critical-path planning and scheduling",
+    "issued": {
+      "date-parts": [
+        [
+          1959
+        ]
+      ]
+    },
+    "publisher": "ACM Press",
+    "URL": "http://dx.doi.org/10.1145/1460299.1460318",
+    "author": [
+      {
+        "suffix": "Jr",
+        "given": "James E.",
+        "family": "Kelley"
+      },
+      {
+        "given": "Morgan R.",
+        "family": "Walker"
+      }
+    ],
+    "source": "Crossref",
+    "event": "Papers presented at the December 1-3, 1959, eastern joint IRE-AIEE-ACM computer conference",
+    "type": "paper-conference"
+}

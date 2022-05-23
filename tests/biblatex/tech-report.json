@@ -1,0 +1,14 @@
+{
+    "type": "report",
+    "genre": "Technical report",
+    "title": "Generic Heuristic for Vehicle Routing Problems with Multiple Synchronization Constraints",
+    "issued": { "date-parts": [[2014]] },
+    "publisher": "Logistics Management, Gutenberg School of Management and Economics, Johannes Gutenberg University",
+    "author": [
+        {
+            "given": "Michael",
+            "family": "Drexl"
+        }
+    ],
+    "id": "drexl2014b"
+}

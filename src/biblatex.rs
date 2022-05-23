@@ -103,17 +103,28 @@ pub mod types {
         }
     }
 
-    #[derive(Debug, Clone)]
-    pub struct Literal(String);
+    macro_rules! tranparent_string_wrapper {
+        ($name:ident) => {
+            #[derive(Clone, Debug)]
+            pub struct $name(pub String);
+
+            impl From<String> for $name {
+                fn from(s: String) -> Self {
+                    $name(s)
+                }
+            }
+        };
+    }
+
+    tranparent_string_wrapper!(Literal);
 
     impl<'a> Display for FmtBiblatex<'a, Literal> {
         fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-            todo!()
+            crate::escape::utf8_to_tex(&self.0 .0).fmt(f)
         }
     }
 
-    #[derive(Debug, Clone)]
-    pub struct Verbatim(pub String);
+    tranparent_string_wrapper!(Verbatim);
 
     impl<'a> Display for FmtBiblatex<'a, Verbatim> {
         fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
@@ -121,8 +132,7 @@ pub mod types {
         }
     }
 
-    #[derive(Debug, Clone)]
-    pub struct Uri(pub String);
+    tranparent_string_wrapper!(Uri);
 
     impl<'a> Display for FmtBiblatex<'a, Uri> {
         fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
@@ -130,42 +140,60 @@ pub mod types {
         }
     }
 
-    // FIXME: validate the string
-    #[derive(Debug, Clone)]
-    pub struct Range(String);
+    #[derive(Debug, Clone, Copy)]
+    pub enum Range {
+        Single(Int),
+        Multi { start: Int, end: Option<Int> },
+    }
 
     impl<'a> Display for FmtBiblatex<'a, Range> {
         fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-            f.write_str(&self.0 .0)
+            match self.0 {
+                Range::Single(i) => i.fmt(f),
+                Range::Multi {
+                    start,
+                    end: Some(end),
+                } => write!(f, "{}-{}", start, end),
+                Range::Multi { start, end: None } => write!(f, "{}-", start),
+            }
         }
     }
 
-    // FIXME: rework
     #[derive(Debug, Clone)]
-    pub struct Name(String);
+    pub struct Name {
+        given: String,
+        family: String,
+    }
+
+    impl Name {
+        pub fn new(given: String, family: String) -> Self {
+            Name { given, family }
+        }
+    }
 
     impl<'a> Display for FmtBiblatex<'a, Name> {
         fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-            f.write_str(&self.0 .0)
+            let n = self.0;
+            write!(f, "{}, {}", utf8_to_tex(&n.family), utf8_to_tex(&n.given),)
         }
     }
 
     #[derive(Debug, Clone)]
     pub struct List<T>(pub Vec<T>);
 
-    impl<T> ToBiblatex for List <T> {
+    impl<T> ToBiblatex for List<T> {
         fn biblatex<'a>(&'a self) -> FmtBiblatex<'a, Self> {
-            FmtBiblatex(self)   
+            FmtBiblatex(self)
         }
     }
 
-    impl<'a, T> Display for FmtBiblatex<'a, List<T>> 
-        where 
-            T: ToBiblatex,
-            FmtBiblatex<'a, T>: Display,
+    impl<'a, T> Display for FmtBiblatex<'a, List<T>>
+    where
+        T: ToBiblatex,
+        FmtBiblatex<'a, T>: Display,
     {
         fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-            let mut values = self.0.0.iter();
+            let mut values = self.0 .0.iter();
             if let Some(first) = values.next() {
                 write!(f, "{}", first.biblatex())?;
             }
@@ -301,6 +329,9 @@ pub mod entry {
             $($req_field:ident),* $(,)? ;
             $($opt_field:ident),* $(,)?
         ) => {
+
+
+
             #[derive(Debug, Clone)]
             #[non_exhaustive]
             pub struct $tyname {
@@ -312,6 +343,8 @@ pub mod entry {
                     pub $opt_field : Option<field_ty!($opt_field)>,
                 )*
             }
+
+            impl_tobiblatex!{$tyname}
 
             impl $tyname {
                 pub fn new(
@@ -350,6 +383,28 @@ pub mod entry {
 
     use super::types::*;
     use super::*;
+
+    #[derive(Clone, Debug)]
+    #[non_exhaustive]
+    pub enum Entry {
+        Article(Article),
+        Thesis(Thesis),
+        InProceedings(InProceedings),
+        Report(Report),
+    }
+
+    impl_tobiblatex! {Entry}
+
+    impl<'a> Display for FmtBiblatex<'a, Entry> {
+        fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+            match &self.0 {
+                Entry::Article(e) => e.biblatex().fmt(f),
+                Entry::Thesis(e) => e.biblatex().fmt(f),
+                Entry::InProceedings(e) => e.biblatex().fmt(f),
+                Entry::Report(e) => e.biblatex().fmt(f),
+            }
+        }
+    }
 
     entry_struct! {
         Article "article";
@@ -406,11 +461,11 @@ pub mod entry {
         eprint_class,
         eprint_type,
         eprint,
-        isbn, 
+        isbn,
         // language,
         location,
-        month, 
-        note, 
+        month,
+        note,
         page_total,
         pages,
         pubstate,
@@ -422,7 +477,7 @@ pub mod entry {
 
     entry_struct! {
         InProceedings "inproceedings";
-        author, 
+        author,
         title,
         book_title,
         year,
@@ -461,5 +516,35 @@ pub mod entry {
         venue,
         volume,
         volumes,
+    }
+
+    entry_struct! {
+        Report "report";
+        author,
+        title,
+        type_,
+        institution,
+        year,
+        ;
+        addendum,
+        chapter,
+        doi,
+        eprint,
+        eprint_class,
+        eprint_type,
+        // isrn,
+        // language,
+        location,
+        month,
+        note,
+        number,
+        pages,
+        page_total,
+        pubstate,
+        subtitle,
+        title_addon,
+        url,
+        url_date,
+        version,
     }
 }

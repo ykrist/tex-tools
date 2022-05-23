@@ -1,0 +1,14 @@
+{
+    "id": "sippel2019",
+    "type": "thesis",
+    "genre": "Honours thesis",
+    "title": "An Exact Algorithm for the ER-DARP",
+    "issued": { "date-parts": [[2019]] },
+    "publisher": "University of Queensland",
+    "author": [
+        {
+            "given": "Lucas",
+            "family": "Sippel"
+        }
+    ]
+}
