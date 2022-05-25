@@ -351,13 +351,19 @@ fn output_biblatex(db: Vec<CslEntry>, path: Option<impl AsRef<Path>>) -> Result<
 
     if let Some(path) = path {
         let path = path.as_ref();
-        let mut file = std::fs::File::create(path).context_write(path).map(std::io::BufWriter::new)?;
+        let mut file = std::fs::File::create(path)
+            .context_write(path)
+            .map(std::io::BufWriter::new)?;
         for e in db {
-            write!(file, "{}\n", e?.biblatex())?;
+            let e = e?;
+            let _s = error_span!("output_biblatex", id = e.id()).entered();
+            write!(file, "{}\n", e.biblatex())?;
         }
     } else {
         for e in db {
-            println!("{}", e?.biblatex());
+            let e = e?;
+            let _s = error_span!("output_biblatex", id = e.id()).entered();
+            println!("{}", e.biblatex());
         }
     }
     Ok(())

@@ -197,24 +197,32 @@ fn convert_working_paper(id: String, mut e: CslEntry) -> Result<entry::Report> {
     Ok(r)
 }
 
+#[instrument(level = "error", skip(e), fields(id))]
 pub fn csl_to_biblatex(mut e: CslEntry) -> Result<Entry> {
     let id = e.require_field(csl::ID)?.expect_string()?;
+    tracing::Span::current().record("id", &&*id);
 
-    match e.require_field(csl::TYPE)?.expect_string()?.as_str() {
-        "article-journal" => convert_article(id, e).map(Entry::Article),
-        "article" => {
-            let mut ty = e.require_field(csl::GENRE)?.expect_string()?;
-            ty.make_ascii_lowercase();
-            match ty.trim() {
-                "working paper" => convert_working_paper(id, e).map(Entry::Report),
-                unknown => bail!("unknown article sub-type `{}`", unknown),
+    let err_context = format!("failed to convert entry `{}`", id);
+    #[inline]
+    fn match_type(id: String, mut e: CslEntry) -> Result<Entry> {
+        match e.require_field(csl::TYPE)?.expect_string()?.as_str() {
+            "article-journal" => convert_article(id, e).map(Entry::Article),
+            "article" => {
+                let mut ty = e.require_field(csl::GENRE)?.expect_string()?;
+                ty.make_ascii_lowercase();
+                match ty.trim() {
+                    "working paper" => convert_working_paper(id, e).map(Entry::Report),
+                    unknown => bail!("unknown article sub-type `{}`", unknown),
+                }
             }
+            "thesis" => convert_thesis(id, e).map(Entry::Thesis),
+            "paper-conference" => convert_conference_paper(id, e).map(Entry::InProceedings),
+            "report" => convert_report(id, e).map(Entry::Report),
+            ty => bail!("no BibLaTex entry type for CSL type {}", ty),
         }
-        "thesis" => convert_thesis(id, e).map(Entry::Thesis),
-        "paper-conference" => convert_conference_paper(id, e).map(Entry::InProceedings),
-        "report" => convert_report(id, e).map(Entry::Report),
-        ty => bail!("no BibLaTex entry type for CSL type {}", ty),
     }
+
+    match_type(id, e).context(err_context)
 }
 
 #[cfg(test)]

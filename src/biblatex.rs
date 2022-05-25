@@ -395,6 +395,17 @@ pub mod entry {
 
     impl_tobiblatex! {Entry}
 
+    impl Entry {
+        pub fn id(&self) -> &str {
+            match self {
+                Entry::Article(e) => &e.id,
+                Entry::Thesis(e) => &e.id,
+                Entry::InProceedings(e) => &e.id,
+                Entry::Report(e) => &e.id,
+            }
+        }
+    }
+
     impl<'a> Display for FmtBiblatex<'a, Entry> {
         fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
             match &self.0 {
