@@ -54,6 +54,9 @@ fn classify_char(c: char) -> CharKind {
         '”' => Escape(r"''"),
         '‘' => Escape(r"`"),
         '’' => Escape(r"'"),
+        '‐' => Escape(r"-"),
+        '–' => Escape(r"--"),
+        '—' => Escape(r"---"),
         c => {
             error!(char=%c.escape_unicode(), "unescaped unicode character");
             panic!(
@@ -249,6 +252,13 @@ mod tests {
         cmp("”", "''");
         cmp("‘", "`");
         cmp("“", "``");
+    }
+
+    #[test]
+    fn dashes() {
+        cmp("‐", "-");
+        cmp("–", "--");
+        cmp("—", "---");
     }
 
     #[test]
