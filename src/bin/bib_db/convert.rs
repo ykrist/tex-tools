@@ -197,6 +197,46 @@ fn convert_working_paper(id: String, mut e: CslEntry) -> Result<entry::Report> {
     Ok(r)
 }
 
+fn parse_arxiv_category(s: impl AsRef<str>) -> Result<String> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"\(([a-z]+\.[A-Z]+)\)").unwrap();
+    }
+
+    let s = s.as_ref();
+    if let Some(c) = RE.captures(s) {
+        return Ok(c.get(1).unwrap().as_str().to_string());
+    }
+    bail!("failed to parse arXiv category: {}", s);
+}
+
+fn convert_arxiv_paper(id: String, mut e: CslEntry) -> Result<entry::Misc> {
+    let author = e.require_field_then(csl::AUTHOR, convert_name_list)?;
+    let title = take_string_field(&mut e, csl::TITLE)?;
+    let date = e.require_field_then(csl::ISSUED, convert_date)?;
+    let mut b = entry::Misc::new(id, author, title, date.year);
+
+    let url: String = take_string_field(&mut e, csl::URL)?;
+    let arxiv_id = url
+        .split("/")
+        .last()
+        .ok_or_else(|| anyhow!("failed to parse URL for arXiv ID: {}", &url))?;
+
+    b.eprint = Some(arxiv_id.into());
+    b.eprint_type = Some("arXiv".into());
+    let main_category = e.require_field_then(csl::CATEGORIES, |v| {
+        let v = v.expect_array()?;
+        let c = v
+            .into_iter()
+            .next()
+            .ok_or_else(|| anyhow!("At least one arXiv category must be given"))?
+            .expect_string()?;
+        parse_arxiv_category(c)
+    })?;
+    b.eprint_class = Some(main_category.into());
+    b.version = take_optional_string_field(&mut e, csl::VERSION)?;
+    Ok(b)
+}
+
 #[instrument(level = "error", skip(e), fields(id))]
 pub fn csl_to_biblatex(mut e: CslEntry) -> Result<Entry> {
     let id = e.require_field(csl::ID)?.expect_string()?;
@@ -212,6 +252,7 @@ pub fn csl_to_biblatex(mut e: CslEntry) -> Result<Entry> {
                 ty.make_ascii_lowercase();
                 match ty.trim() {
                     "working paper" => convert_working_paper(id, e).map(Entry::Report),
+                    "arxiv" => convert_arxiv_paper(id, e).map(Entry::Misc),
                     unknown => bail!("unknown article sub-type `{}`", unknown),
                 }
             }
@@ -246,6 +287,14 @@ mod tests {
     }
 
     #[test]
+    fn parse_arxiv_category() -> Result<()> {
+        use super::parse_arxiv_category as parse;
+        assert_eq!(parse("Optimization and Control (math.OC)")?, "math.OC");
+        assert_eq!(parse("Discrete Mathematics (cs.DM)")?, "cs.DM");
+        Ok(())
+    }
+
+    #[test]
     fn article() -> Result<()> {
         check_output("article")
     }
@@ -273,5 +322,10 @@ mod tests {
     #[test]
     fn working_paper() -> Result<()> {
         check_output("working-paper")
+    }
+
+    #[test]
+    fn arxiv() -> Result<()> {
+        check_output("arxiv")
     }
 }

@@ -1,7 +1,9 @@
 use std::time::Duration;
 use std::{num::NonZeroU32, path::Path};
 
+use super::csl_fields as csl;
 use super::*;
+
 use futures::future;
 use governor as gv;
 use reqwest::{header, Client, Response};
@@ -134,12 +136,11 @@ fn clean_json(entry: &mut JsonValue) {
         }
     }
 
-    // if let Some(vals @ JsonValue::Array(_)) = entry.get_mut("ISSN") {
-    //     if vals.as_array().unwrap().len() == 1 {
-    //         let value = vals.take().unwrap_array().into_iter().next().unwrap();
-    //         *vals = value;
-    //     }
-    // }
+    if entry.get(csl::PUBLISHER).map(JsonValue::as_str).flatten() == Some("arXiv") {
+        if !entry.contains_key(csl::GENRE) {
+            entry.insert("genre".into(), "arxiv".into());
+        }
+    }
 }
 
 fn clean_name_fields(author: &mut JsonValue) {

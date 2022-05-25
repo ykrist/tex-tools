@@ -113,6 +113,12 @@ pub mod types {
                     $name(s)
                 }
             }
+
+            impl From<&str> for $name {
+                fn from(s: &str) -> Self {
+                    $name(s.to_string())
+                }
+            }
         };
     }
 
@@ -391,6 +397,7 @@ pub mod entry {
         Thesis(Thesis),
         InProceedings(InProceedings),
         Report(Report),
+        Misc(Misc),
     }
 
     impl_tobiblatex! {Entry}
@@ -402,6 +409,7 @@ pub mod entry {
                 Entry::Thesis(e) => &e.id,
                 Entry::InProceedings(e) => &e.id,
                 Entry::Report(e) => &e.id,
+                Entry::Misc(e) => &e.id,
             }
         }
     }
@@ -413,6 +421,7 @@ pub mod entry {
                 Entry::Thesis(e) => e.biblatex().fmt(f),
                 Entry::InProceedings(e) => e.biblatex().fmt(f),
                 Entry::Report(e) => e.biblatex().fmt(f),
+                Entry::Misc(e) => e.biblatex().fmt(f),
             }
         }
     }
@@ -554,6 +563,38 @@ pub mod entry {
         pubstate,
         subtitle,
         title_addon,
+        url,
+        url_date,
+        version,
+    }
+
+    entry_struct! {
+        Misc "misc";
+        author,
+        title,
+        year,
+        ;
+        addendum,
+        chapter,
+        doi,
+        edition,
+        eprint,
+        eprint_class,
+        eprint_type,
+        isbn,
+        // language,
+        location,
+        note,
+        number,
+        organization,
+        pages,
+        page_total,
+        publisher,
+        pubstate,
+        series,
+        subtitle,
+        title_addon,
+        type_,
         url,
         url_date,
         version,
