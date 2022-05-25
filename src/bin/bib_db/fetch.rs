@@ -107,7 +107,9 @@ fn clean_json(entry: &mut JsonValue) {
         if let Some(ty) = ty.as_str() {
             match ty {
                 "book-chapter" => {
-                    new_ty = Some("book");
+                    // You'd think this would be a book, but for some reason Crosscite and gang
+                    // like listing conference papers as book-chapters.
+                    new_ty = Some("paper-conference");
                 }
                 "journal-article" => {
                     new_ty = Some("article-journal");
@@ -332,10 +334,14 @@ pub struct ClArgs {
 
     /// Output path. Default is same name as input file with "-filled" appended to the filename stem.
     #[clap(short = 'o')]
-    output: Option<PathBuf>,
+    output: Option<String>,
+
+    /// Output a single entry only, useful for debugging.
+    #[clap(short = 'e')]
+    entry: Option<String>,
 }
 
-fn output_json(db: &Vec<CslEntry>, path: Option<impl AsRef<Path>>) -> Result<()> {
+fn output_json(db: Vec<CslEntry>, path: Option<impl AsRef<Path>>) -> Result<()> {
     if let Some(path) = path {
         write_json_pretty(path, &db)
     } else {
@@ -380,16 +386,24 @@ pub fn main(mut args: ClArgs) -> Result<()> {
 
     fetch_and_merge(&args, &mut db)?;
 
-    let output_file = args.output.take().unwrap_or_else(|| {
-        let mut n = args.input.file_stem().expect("no file name").to_os_string();
-        n.push("-filled.");
-        n.push(args.format.suffix());
-        args.input.with_file_name(n)
-    });
+    let output_file = match args.output.take() {
+        None => {
+            let mut n = args.input.file_stem().expect("no file name").to_os_string();
+            n.push("-filled.");
+            n.push(args.format.suffix());
+            Some(args.input.with_file_name(n))
+        }
+        Some(s) if s == "-" => None,
+        Some(p) => Some(PathBuf::from(p)),
+    };
+
+    if let Some(id) = args.entry.as_ref() {
+        db.retain(|e| e["id"].as_str() == Some(id))
+    }
 
     match args.format {
-        OutputFormat::Json => output_json(&db, Some(output_file))?,
-        OutputFormat::Biblatex => output_biblatex(db, Some(output_file))?,
+        OutputFormat::Json => output_json(db, output_file)?,
+        OutputFormat::Biblatex => output_biblatex(db, output_file)?,
     }
 
     Ok(())

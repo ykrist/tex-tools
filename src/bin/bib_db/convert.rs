@@ -52,43 +52,100 @@ fn convert_name_list(list: JsonValue) -> Result<types::List<Name>> {
 }
 
 fn convert_date(date: JsonValue) -> Result<Date> {
-    let mut parts = date
-        .expect_object()?
-        .require_field("date-parts")?
-        .expect_array()?;
+    fn convert_date_parts(parts: JsonValue) -> Result<Date> {
+        let mut parts = parts.expect_array()?;
+        if parts.len() != 1 {
+            bail!("expected a single date")
+        }
+        let mut parts = parts.pop().unwrap().expect_array()?;
 
-    if parts.len() != 1 {
-        bail!("expected a single date")
+        if parts.is_empty() || parts.len() > 3 {
+            bail!(
+                "date array should be between 1 and 3 elements long: {:?}",
+                parts
+            )
+        }
+
+        parts.reverse(); // ymd to dmy (or my or y)
+        let year = parts.pop().unwrap().expect_int().map(|y| y as i32)?;
+        let month = parts
+            .pop()
+            .map(|v| v.expect_uint().map(|y| y as i32))
+            .transpose()?;
+        let day = parts
+            .pop()
+            .map(|v| v.expect_uint().map(|y| y as i32))
+            .transpose()?;
+
+        Ok(Date { year, month, day })
     }
-    let mut parts = parts.pop().unwrap().expect_array()?;
 
-    if parts.is_empty() || parts.len() > 3 {
+    fn convert_raw_date(raw: JsonValue) -> Result<Date> {
+        lazy_static! {
+            static ref YEAR: Regex = Regex::new(r"^(\d{4})$").unwrap();
+            static ref YEAR_MONTH: Regex = Regex::new(r"^(\d{4})-(\d\d?)$").unwrap();
+            static ref FULL: Regex = Regex::new(r"^(\d{4})-(\d\d?)-(\d\d?)$").unwrap();
+        }
+
+        let s = raw.expect_string()?;
+        let parse_month = |s: &str| -> Result<i32> {
+            let i: i32 = s.parse().unwrap();
+            if (1..=12).contains(&i) {
+                Ok(i)
+            } else {
+                bail!("months are from 1 to 12")
+            }
+        };
+        let parse_date = |s: &str| -> Result<i32> {
+            let i: i32 = s.parse().unwrap();
+            if (1..=31).contains(&i) {
+                Ok(i)
+            } else {
+                bail!("days are from 1 to 31")
+            }
+        };
+
+        for re in [&*YEAR, &*YEAR_MONTH, &*FULL] {
+            if let Some(c) = re.captures(&s) {
+                return Ok(Date {
+                    year: c
+                        .get(1)
+                        .unwrap()
+                        .as_str()
+                        .parse()
+                        .context("failed to parse year")?,
+                    month: c.get(2).map(|s| parse_month(s.as_str())).transpose()?,
+                    day: c.get(3).map(|s| parse_date(s.as_str())).transpose()?,
+                });
+            }
+        }
+
         bail!(
-            "date array should be between 1 and 3 elements long: {:?}",
-            parts
+            "bad date format: `{}`. Acceptable formats are YYYY, YYYY-MM and YYYY-MM-DD.",
+            &s
         )
     }
 
-    parts.reverse(); // ymd to dmy (or my or y)
-    let year = parts.pop().unwrap().expect_int().map(|y| y as i32)?;
-    let month = parts
-        .pop()
-        .map(|v| v.expect_uint().map(|y| y as i32))
-        .transpose()?;
-    let day = parts
-        .pop()
-        .map(|v| v.expect_uint().map(|y| y as i32))
-        .transpose()?;
+    let mut date = date.expect_object()?;
+    if let Some(parts) = date.remove("date-parts") {
+        return convert_date_parts(parts);
+    }
+    if let Some(raw) = date.remove("raw") {
+        return convert_raw_date(raw);
+    }
 
-    Ok(Date { year, month, day })
+    bail!("date fields must have either a `date-parts` or `raw` property");
 }
 
 fn convert_page_range(v: JsonValue) -> Result<types::Range> {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"(\d+)-(\d+)").unwrap();
+        static ref RE: Regex = Regex::new(r"^(\d+)-(\d+)$").unwrap();
     }
 
     let range = v.expect_string()?;
+    if let Ok(i) = range.parse() {
+        return Ok(types::Range::Single(i));
+    }
     let make_err_ctx = || format!("unable to parse `{}` as a range", &range);
     let make_err = || anyhow::Error::msg(make_err_ctx());
 
@@ -96,14 +153,14 @@ fn convert_page_range(v: JsonValue) -> Result<types::Range> {
 
     let start: i32 = captures
         .get(1)
-        .ok_or_else(make_err)?
+        .unwrap()
         .as_str()
         .parse()
         .with_context(make_err_ctx)?;
 
     let end: i32 = captures
         .get(2)
-        .ok_or_else(make_err)?
+        .unwrap()
         .as_str()
         .parse()
         .with_context(make_err_ctx)?;
@@ -291,6 +348,35 @@ mod tests {
         use super::parse_arxiv_category as parse;
         assert_eq!(parse("Optimization and Control (math.OC)")?, "math.OC");
         assert_eq!(parse("Discrete Mathematics (cs.DM)")?, "cs.DM");
+        Ok(())
+    }
+
+    #[test]
+    fn convert_date() -> Result<()> {
+        use super::convert_date as convert;
+        use serde_json::json;
+        assert_eq!(
+            convert(json!({ "date-parts": [[2001, 1, 25]]}))?,
+            Date::full(2001, 1, 25)
+        );
+        assert_eq!(
+            convert(json!({ "date-parts": [[2001, 1]]}))?,
+            Date::year_month(2001, 1)
+        );
+        assert_eq!(convert(json!({ "date-parts": [[2001]]}))?, Date::year(2001));
+        assert_eq!(
+            convert(json!({ "raw": "2001-01-25"}))?,
+            Date::full(2001, 1, 25)
+        );
+        assert_eq!(
+            convert(json!({ "raw": "2001-01"}))?,
+            Date::year_month(2001, 1)
+        );
+        assert_eq!(
+            convert(json!({ "raw": "2001-1"}))?,
+            Date::year_month(2001, 1)
+        );
+        assert_eq!(convert(json!({ "raw": "2001"}))?, Date::year(2001));
         Ok(())
     }
 

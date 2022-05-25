@@ -30,7 +30,7 @@ pub mod types {
         }
     }
 
-    #[derive(Clone, Copy, Debug)]
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
     pub struct Date {
         pub year: Int,
         pub month: Option<Int>,

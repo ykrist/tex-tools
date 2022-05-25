@@ -59,6 +59,12 @@ fn classify_char(c: char) -> CharKind {
         '—' => Escape(r"---"),
         c => {
             error!(char=%c.escape_unicode(), "unescaped unicode character");
+            if c == '\u{FFFD}' {
+                panic!(
+                    "Encountered `�`: the Unicode replacement character.  
+                    This indicates  the original doi.org source is fucked up and you'll have to fill in this field manually."
+                )
+            }
             panic!(
                 "unimplemented: not sure how to interpret {}: {} ",
                 c.escape_unicode(),
