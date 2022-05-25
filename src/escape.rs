@@ -1,3 +1,4 @@
+use crate::*;
 use std::fmt::{Display, Error as FmtError, Formatter, Result as FmtResult, Write};
 use unicode_normalization::UnicodeNormalization;
 
@@ -15,6 +16,7 @@ enum CharKind {
     Combining(&'static str),
 }
 
+#[instrument(level = "trace", name = "classify_utf8_char")]
 fn classify_char(c: char) -> CharKind {
     use CharKind::*;
     match c {
@@ -48,12 +50,18 @@ fn classify_char(c: char) -> CharKind {
         '\u{0323}' => Combining(r"\d"),
         '\u{0327}' => Combining(r"\c"),
         '\u{0328}' => Combining(r"\k"),
-
-        c => panic!(
-            "unimplemented: not sure how to interpret {}: {} ",
-            c.escape_unicode(),
-            c
-        ),
+        '“' => Escape(r"``"),
+        '”' => Escape(r"''"),
+        '‘' => Escape(r"`"),
+        '’' => Escape(r"'"),
+        c => {
+            error!(char=%c.escape_unicode(), "unescaped unicode character");
+            panic!(
+                "unimplemented: not sure how to interpret {}: {} ",
+                c.escape_unicode(),
+                c
+            )
+        }
     }
 }
 
@@ -233,6 +241,14 @@ mod tests {
     fn zalgo_text() {
         cmp("ą\u{0302}\u{0304}", r"\k{\^{\={a}}}");
         cmp("\u{212b}\u{0300}\u{0301}", r"\r{\`{\'{A}}}");
+    }
+
+    #[test]
+    fn quotes() {
+        cmp("’", "'");
+        cmp("”", "''");
+        cmp("‘", "`");
+        cmp("“", "``");
     }
 
     #[test]
