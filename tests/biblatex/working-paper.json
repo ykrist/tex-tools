@@ -1,0 +1,22 @@
+{
+    "type": "article",
+    "genre": "Working paper",
+    "title": "Branch-and-Cut for the Active-Passive Vehicle Routing Problem",
+    "number": "1915",
+    "issued": { 
+        "date-parts": [[2019, 12]] 
+    },
+    "publisher": "Gutenberg School of Management and Economics, Johannes Gutenberg-Universität Mainz",
+    "author": [
+        {
+            "given": "Christian",
+            "family": "Tilk"
+        },
+        {
+            "given": "Michael",
+            "family": "Forbes"
+        }
+    ],
+    "id": "tilk2019",
+    "URL": "https://ideas.repec.org/p/jgu/wpaper/1915.html"
+}

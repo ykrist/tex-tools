@@ -182,11 +182,34 @@ fn convert_report(id: String, mut e: CslEntry) -> Result<entry::Report> {
     Ok(r)
 }
 
+fn convert_working_paper(id: String, mut e: CslEntry) -> Result<entry::Report> {
+    let author = e.require_field_then(csl::AUTHOR, convert_name_list)?;
+    let title = take_string_field(&mut e, csl::TITLE)?;
+    let date = e.require_field_then(csl::ISSUED, convert_date)?;
+    let year = date.year;
+    let institution = types::List(vec![take_string_field(&mut e, csl::PUBLISHER)?]);
+    let kind = "Working paper".to_string().into();
+
+    let mut r = entry::Report::new(id, author, title, kind, institution, year);
+    r.month = date.month;
+    r.number = take_optional_string_field(&mut e, csl::NUMBER)?;
+    r.url = take_optional_string_field(&mut e, csl::URL)?;
+    Ok(r)
+}
+
 pub fn csl_to_biblatex(mut e: CslEntry) -> Result<Entry> {
     let id = e.require_field(csl::ID)?.expect_string()?;
 
     match e.require_field(csl::TYPE)?.expect_string()?.as_str() {
         "article-journal" => convert_article(id, e).map(Entry::Article),
+        "article" => {
+            let mut ty = e.require_field(csl::GENRE)?.expect_string()?;
+            ty.make_ascii_lowercase();
+            match ty.trim() {
+                "working paper" => convert_working_paper(id, e).map(Entry::Report),
+                unknown => bail!("unknown article sub-type `{}`", unknown),
+            }
+        }
         "thesis" => convert_thesis(id, e).map(Entry::Thesis),
         "paper-conference" => convert_conference_paper(id, e).map(Entry::InProceedings),
         "report" => convert_report(id, e).map(Entry::Report),
@@ -237,5 +260,10 @@ mod tests {
     #[test]
     fn technical_report() -> Result<()> {
         check_output("tech-report")
+    }
+
+    #[test]
+    fn working_paper() -> Result<()> {
+        check_output("working-paper")
     }
 }
