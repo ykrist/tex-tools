@@ -69,7 +69,8 @@
     },
     {
         "id": "he2018",
-        "DOI": "10.1007/978-3-319-93031-2_21"
+        "DOI": "10.1007/978-3-319-93031-2_21",
+        "type": "paper-conference"
     },
     {
         "id": "hernandez-perez2004",
@@ -116,7 +117,13 @@
         "type": "thesis",
         "genre": "Honours thesis",
         "title": "An Exact Algorithm for the ER-DARP",
-        "issued": { "date-parts": [[2019]] },
+        "issued": {
+            "date-parts": [
+                [
+                    2019
+                ]
+            ]
+        },
         "publisher": "University of Queensland",
         "author": [
             {
@@ -127,18 +134,26 @@
     },
     {
         "type": "article",
+        "genre": "Working paper",
         "title": "Branch-and-Cut for the Active-Passive Vehicle Routing Problem",
         "number": "1915",
-        "issued": { "date-parts": [[2019, 12]] },
+        "issued": {
+            "date-parts": [
+                [
+                    2019,
+                    12
+                ]
+            ]
+        },
         "publisher": "Gutenberg School of Management and Economics, Johannes Gutenberg-Universität Mainz",
         "author": [
             {
-                "family": "Christian",
-                "given": "Tilk"
+                "given": "Christian",
+                "family": "Tilk"
             },
             {
-                "family": "Michael",
-                "given": "Forbes"
+                "given": "Michael",
+                "family": "Forbes"
             }
         ],
         "id": "tilk2019",
@@ -178,7 +193,8 @@
     },
     {
         "id": "haugland2010",
-        "DOI": "10.1007/978-3-642-14355-7_18"
+        "DOI": "10.1007/978-3-642-14355-7_18",
+        "type": "paper-conference"
     },
     {
         "id": "firat2011",
@@ -201,7 +217,13 @@
         "type": "thesis",
         "genre": "Doctoral dissertation",
         "title": "Heuristic and exact algorithms for vehicle routing problems",
-        "issued": { "date-parts" : [[2006]] },
+        "issued": {
+            "date-parts": [
+                [
+                    2006
+                ]
+            ]
+        },
         "publisher": "University of Copenhagen",
         "author": [
             {
@@ -312,7 +334,21 @@
     },
     {
         "id": "ascheuer2000",
-        "DOI": "10.1002/1097-0037(200009)36:2<69::AID-NET1>3.0.co;2-q"
+        "DOI": "10.1002/1097-0037(200009)36:2<69::AID-NET1>3.0.co;2-q",
+        "author": [
+            {
+                "given": "Norbert",
+                "family": "Ascheuer"
+            },
+            {
+                "given": "Matteo",
+                "family": "Fischetti"
+            },
+            {
+                "given": "Martin",
+                "family": "Grötschel"
+            }
+        ]
     },
     {
         "id": "meisel2014",
@@ -374,7 +410,13 @@
         "type": "thesis",
         "genre": "Doctoral dissertation",
         "title": "On some generalized routing problems",
-        "issued": { "date-parts": [[2007]] },
+        "issued": {
+            "date-parts": [
+                [
+                    2007
+                ]
+            ]
+        },
         "publisher": "Rheinisch-Westfälische Technische Hochschule Aachen",
         "author": [
             {
@@ -414,8 +456,9 @@
     },
     {
         "type": "report",
+        "genre": "Technical report",
         "title": "Generic Heuristic for Vehicle Routing Problems with Multiple Synchronization Constraints",
-        "issued": { "date-parts": [[2014]] },
+        "issued": { "raw" : "2014" },
         "publisher": "Logistics Management, Gutenberg School of Management and Economics, Johannes Gutenberg University",
         "author": [
             {
