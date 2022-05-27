@@ -196,6 +196,7 @@ mod cache {
             self.0.insert(doi, value);
         }
 
+        #[allow(dead_code)]
         pub fn into_inner(self) -> HashMap<String, CslEntry> {
             self.0
         }
@@ -208,13 +209,15 @@ mod validate;
 mod output {}
 
 #[derive(Parser)]
+#[clap(infer_subcommands(true))]
 enum Cmd {
-    /// Fetch missing information from doi.org
+    /// Fetch missing bibliographic information from doi.org
     Fetch(fetch::ClArgs),
 
     /// Validate the input database against the CSL schema
     Validate(validate::ClArgs),
 
+    #[cfg(debug_assertions)]
     /// Validate the cache against the CSL schema
     ValidateCache(validate::ValidateCacheOptions),
 
@@ -230,6 +233,7 @@ fn main() -> Result<()> {
 
     match Cmd::parse() {
         Cmd::Validate(args) => validate::main(args),
+        #[cfg(debug_assertions)]
         Cmd::ValidateCache(args) => validate::validate_cache(args),
         Cmd::Fetch(args) => fetch::main(args),
         Cmd::ClearCache => cache::FetchCache::clear(),

@@ -1,6 +1,6 @@
 use anyhow::*;
 use std::fmt::Write;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 fn examples_codegen() -> Result<String> {
     struct Example {

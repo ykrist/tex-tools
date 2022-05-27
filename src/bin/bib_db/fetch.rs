@@ -35,6 +35,7 @@ fn pop_print_isbn(entry: &mut CslEntry) -> Option<JsonValue> {
     None
 }
 
+#[instrument(level = "error", name = "clean", skip(entry))]
 fn clean_json(entry: &mut JsonValue) {
     let entry = match entry.as_object_mut() {
         Some(e) => e,
@@ -122,6 +123,7 @@ fn clean_json(entry: &mut JsonValue) {
         }
 
         if let Some(new_ty) = new_ty {
+            warn!(invalid=%ty, inferred=%new_ty, "converting out-of-spec type, inferred type may be wrong");
             entry.insert(ty_field, new_ty.into());
         } else {
             entry.insert(ty_field, ty);
@@ -238,8 +240,8 @@ pub fn fetch_and_validate<'a>(
             raw.push(json.clone());
         }
 
-        clean_json(&mut json);
         let _s = error_span!("validate", doi).entered();
+        clean_json(&mut json);
 
         if !validate::validate_entry(&json, validate::ignore_missing_id) {
             continue;
@@ -280,8 +282,7 @@ pub fn fetch_and_merge(options: &ClArgs, db: &mut Vec<CslEntry>) -> Result<()> {
 
     if count > 0 {
         info!(count, "retrieving entries");
-
-        for (doi, json) in fetch_and_validate(options, to_fetch, options.dump_raw.as_ref())? {
+        for (doi, json) in fetch_and_validate(options, to_fetch, options.dump_raw())? {
             cache.insert(doi.to_string(), json.unwrap_object());
         }
         cache.save()?;
@@ -320,25 +321,40 @@ pub struct ClArgs {
     /// Input file (CSL JSON format)
     input: PathBuf,
 
-    /// Maximum number of requests allowed per second.
+    /// Maximum number of API requests allowed per second.
     #[clap(short = 'r', default_value_t = 20)]
     max_requests_per_sec: u32,
 
-    /// Dump the raw JSON retrieved, prior to cleaning
+    /// Dump the raw JSON retrieved, prior to cleaning.
+    #[cfg(debug_assertions)]
     #[clap(long, value_name = "PATH")]
     dump_raw: Option<PathBuf>,
 
     /// Output format
-    #[clap(arg_enum, short='f', default_value_t=OutputFormat::Json)]
+    #[clap(arg_enum, short='f', default_value_t=OutputFormat::Biblatex)]
     format: OutputFormat,
 
-    /// Output path. Default is same name as input file with "-filled" appended to the filename stem.
+    /// Output path. Default is same name as input file with "-filled" appended to the filename stem. Use "-"
+    /// for STDOUT.
     #[clap(short = 'o')]
     output: Option<String>,
 
     /// Output a single entry only, useful for debugging.
     #[clap(short = 'e')]
     entry: Option<String>,
+}
+
+impl ClArgs {
+    fn dump_raw(&self) -> Option<&PathBuf> {
+        #[cfg(debug_assertions)]
+        {
+            return self.dump_raw.as_ref();
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            return None;
+        }
+    }
 }
 
 fn output_json(db: Vec<CslEntry>, path: Option<impl AsRef<Path>>) -> Result<()> {
@@ -402,8 +418,12 @@ pub fn main(mut args: ClArgs) -> Result<()> {
     }
 
     match args.format {
-        OutputFormat::Json => output_json(db, output_file)?,
-        OutputFormat::Biblatex => output_biblatex(db, output_file)?,
+        OutputFormat::Json => output_json(db, output_file.as_ref())?,
+        OutputFormat::Biblatex => output_biblatex(db, output_file.as_ref())?,
+    }
+
+    if let Some(p) = &output_file {
+        info!(path=%p.display(), "wrote output file");
     }
 
     Ok(())

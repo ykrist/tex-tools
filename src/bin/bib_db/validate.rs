@@ -89,6 +89,7 @@ pub struct ValidateCacheOptions {
     output: Option<PathBuf>,
 }
 
+#[cfg(debug_assertions)]
 pub fn validate_cache(options: ValidateCacheOptions) -> Result<()> {
     let cache = cache::FetchCache::load()?.into_inner();
     let mut ok = true;
