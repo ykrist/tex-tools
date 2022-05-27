@@ -202,6 +202,7 @@ mod cache {
     }
 }
 
+mod example;
 mod fetch;
 mod validate;
 mod output {}
@@ -222,17 +223,6 @@ enum Cmd {
 
     /// Print an example database entry
     Example(example::ClArgs),
-}
-
-mod example {
-    use super::*;
-
-    #[derive(Args)]
-    pub struct ClArgs {}
-
-    pub fn main(_args: ClArgs) -> Result<()> {
-        todo!()
-    }
 }
 
 fn main() -> Result<()> {
