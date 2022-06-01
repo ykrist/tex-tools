@@ -1,7 +1,7 @@
 use anyhow::Context;
 use jsonschema::JSONSchema;
 use lazy_static::lazy_static;
-use posix_cli_utils::*;
+use posix_cli_utils::{ArgEnum, Args, IoContext, Parser};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use std::path::PathBuf;
@@ -229,6 +229,7 @@ enum Cmd {
 }
 
 fn main() -> Result<()> {
+    posix_cli_utils::reset_sigpipe();
     logging_init();
 
     match Cmd::parse() {

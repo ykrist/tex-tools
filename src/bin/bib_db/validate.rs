@@ -57,28 +57,30 @@ pub fn validate_entry(entry: &JsonValue, ignore: impl Fn(&ValidationError) -> bo
 }
 const EXIT_ERROR_MSG: &str = "Validation failed";
 
-pub fn load_and_validate_db(path: impl AsRef<Path>) -> Result<Vec<JsonValue>> {
-    let db = match read_json::<JsonValue, _>(path)? {
-        JsonValue::Array(db) => db,
-        _ => {
-            error!("top-level JSON value must be an array.");
-            bail!("{}", EXIT_ERROR_MSG)
-        }
-    };
+pub fn load_and_validate_db(path: impl AsRef<Path>, ignore_errors: bool) -> Result<Vec<JsonValue>> {
+    let mut db = read_json::<JsonValue, _>(path)?
+        .expect_array()
+        .context("top-level JSON value must be an array.")?;
 
-    let mut is_ok = true;
-    for (entry_index, entry) in db.iter().enumerate() {
+    let mut all_valid = true;
+    let mut entry_index = 0;
+
+    db.retain(|entry| {
         let _s = error_span!("validate_db", entry_index).entered();
-        is_ok &= validate_entry(&entry, ignore_missing_type);
-    }
-    if !is_ok {
+        let valid = validate_entry(entry, ignore_missing_type);
+        all_valid &= valid;
+        entry_index += 1;
+        valid
+    });
+
+    if !all_valid && !ignore_errors {
         bail!("{}", EXIT_ERROR_MSG)
     }
     Ok(db)
 }
 
 pub fn main(args: ClArgs) -> Result<()> {
-    load_and_validate_db(args.input)?;
+    load_and_validate_db(args.input, false)?;
     Ok(())
 }
 

@@ -2,7 +2,18 @@
 
 use std::{fmt::Display, path::Path};
 
-pub use anyhow::{anyhow, bail, Context as ErrContext, Result};
+pub use anyhow::{anyhow, Context as ErrContext, Result};
+
+#[macro_export]
+macro_rules! bail {
+    ($($t:tt)*) => {
+        {
+            tracing::error!($($t)*);
+            anyhow::bail!($($t)*)
+        }
+    };
+}
+
 pub use clap::{Args, Parser};
 pub use tracing::{
     debug, debug_span, error, error_span, info, info_span, instrument, trace, trace_span, warn,
@@ -58,6 +69,7 @@ pub fn logging_init() {
         .with(
             fmt::layer()
                 // .pretty()
+                .with_writer(std::io::stderr)
                 .without_time(),
         )
         .with(EnvFilter::from_default_env())

@@ -215,7 +215,7 @@ pub fn fetch_and_validate<'a>(
     let tasks = dois.into_iter().map(|doi| {
         let client = &client;
         let rl = &rl;
-        async move { (doi, fetch_one(&client, &rl, &doi).await) }
+        async move { (doi, fetch_one(&client, &rl, doi).await) }
     });
 
     let fetch_results = runtime.block_on(future::join_all(tasks));
@@ -342,6 +342,10 @@ pub struct ClArgs {
     /// Output a single entry only, useful for debugging.
     #[clap(short = 'e')]
     entry: Option<String>,
+
+    /// Ignore and skip over entries with errors
+    #[clap(short = 'c')]
+    ignore_errors: bool,
 }
 
 impl ClArgs {
@@ -367,34 +371,49 @@ fn output_json(db: Vec<CslEntry>, path: Option<impl AsRef<Path>>) -> Result<()> 
     }
 }
 
-fn output_biblatex(db: Vec<CslEntry>, path: Option<impl AsRef<Path>>) -> Result<()> {
+fn output_biblatex(
+    db: Vec<CslEntry>,
+    path: Option<impl AsRef<Path>>,
+    ignore_errors: bool,
+) -> Result<()> {
     use std::io::Write;
+
+    fn write<W: Write, I: IntoIterator<Item = Result<biblatex::entry::Entry>>>(
+        db: I,
+        mut w: W,
+        ignore_errors: bool,
+    ) -> Result<()> {
+        for e in db {
+            match e {
+                Ok(e) => write!(w, "{}\n", e.biblatex())?,
+                Err(e) => {
+                    if !ignore_errors {
+                        return Err(e);
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
 
     let db = db.into_iter().map(convert::csl_to_biblatex);
 
     if let Some(path) = path {
         let path = path.as_ref();
-        let mut file = std::fs::File::create(path)
+        let file = std::fs::File::create(path)
             .context_write(path)
             .map(std::io::BufWriter::new)?;
-        for e in db {
-            let e = e?;
-            let _s = error_span!("output_biblatex", id = e.id()).entered();
-            write!(file, "{}\n", e.biblatex())?;
-        }
+        write(db, file, ignore_errors)?;
     } else {
-        for e in db {
-            let e = e?;
-            let _s = error_span!("output_biblatex", id = e.id()).entered();
-            println!("{}", e.biblatex());
-        }
+        let out = std::io::stdout();
+        write(db, out.lock(), ignore_errors)?;
     }
     Ok(())
 }
 
 pub fn main(mut args: ClArgs) -> Result<()> {
     args.max_requests_per_sec = args.max_requests_per_sec.max(1);
-    let mut db: Vec<_> = validate::load_and_validate_db(&args.input)?
+    let mut db: Vec<_> = validate::load_and_validate_db(&args.input, args.ignore_errors)?
         .into_iter()
         .map(JsonExt::unwrap_object)
         .collect();
@@ -419,7 +438,7 @@ pub fn main(mut args: ClArgs) -> Result<()> {
 
     match args.format {
         OutputFormat::Json => output_json(db, output_file.as_ref())?,
-        OutputFormat::Biblatex => output_biblatex(db, output_file.as_ref())?,
+        OutputFormat::Biblatex => output_biblatex(db, output_file.as_ref(), args.ignore_errors)?,
     }
 
     if let Some(p) = &output_file {

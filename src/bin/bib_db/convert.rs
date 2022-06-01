@@ -39,6 +39,7 @@ impl ExpectField for CslEntry {
     }
 }
 
+#[instrument(level = "trace", skip_all)]
 fn convert_name(name: JsonValue) -> Result<Name> {
     let mut name = name.expect_object()?;
     let given = name.require_field("given")?.expect_string()?;
@@ -46,12 +47,15 @@ fn convert_name(name: JsonValue) -> Result<Name> {
     Ok(Name::new(given, family))
 }
 
+#[instrument(level = "trace", skip_all)]
 fn convert_name_list(list: JsonValue) -> Result<types::List<Name>> {
     let names: Result<Vec<_>> = list.expect_array()?.into_iter().map(convert_name).collect();
     names.map(types::List)
 }
 
+#[instrument(level = "trace", skip_all)]
 fn convert_date(date: JsonValue) -> Result<Date> {
+    #[instrument(level = "trace", skip_all)]
     fn convert_date_parts(parts: JsonValue) -> Result<Date> {
         let mut parts = parts.expect_array()?;
         if parts.len() != 1 {
@@ -80,6 +84,7 @@ fn convert_date(date: JsonValue) -> Result<Date> {
         Ok(Date { year, month, day })
     }
 
+    #[instrument(level = "trace", skip_all)]
     fn convert_raw_date(raw: JsonValue) -> Result<Date> {
         lazy_static! {
             static ref YEAR: Regex = Regex::new(r"^(\d{4})$").unwrap();
@@ -137,6 +142,7 @@ fn convert_date(date: JsonValue) -> Result<Date> {
     bail!("date fields must have either a `date-parts` or `raw` property");
 }
 
+#[instrument(level = "trace", skip_all)]
 fn convert_page_range(v: JsonValue) -> Result<types::Range> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^(\d+)-(\d+)$").unwrap();
@@ -181,6 +187,7 @@ fn take_string_field<T: From<String>>(e: &mut CslEntry, f: &str) -> Result<T> {
     Ok(v.into())
 }
 
+#[instrument(level = "info", skip(e))]
 fn convert_article(id: String, mut e: CslEntry) -> Result<entry::Article> {
     let author = e.require_field_then(csl::AUTHOR, convert_name_list)?;
     let title = e.require_field_then(csl::TITLE, |t| t.expect_string().map(From::from))?;
@@ -199,6 +206,7 @@ fn convert_article(id: String, mut e: CslEntry) -> Result<entry::Article> {
     Ok(a)
 }
 
+#[instrument(level = "info", skip(e))]
 fn convert_thesis(id: String, mut e: CslEntry) -> Result<entry::Thesis> {
     let author = e.require_field_then(csl::AUTHOR, convert_name_list)?;
     let title = take_string_field(&mut e, csl::TITLE)?;
@@ -212,6 +220,7 @@ fn convert_thesis(id: String, mut e: CslEntry) -> Result<entry::Thesis> {
     Ok(t)
 }
 
+#[instrument(level = "info", skip(e))]
 fn convert_conference_paper(id: String, mut e: CslEntry) -> Result<entry::InProceedings> {
     let author = e.require_field_then(csl::AUTHOR, convert_name_list)?;
     let title = take_string_field(&mut e, csl::TITLE)?;
@@ -226,6 +235,7 @@ fn convert_conference_paper(id: String, mut e: CslEntry) -> Result<entry::InProc
     Ok(c)
 }
 
+#[instrument(level = "info", skip(e))]
 fn convert_report(id: String, mut e: CslEntry) -> Result<entry::Report> {
     let author = e.require_field_then(csl::AUTHOR, convert_name_list)?;
     let title = take_string_field(&mut e, csl::TITLE)?;
@@ -239,6 +249,7 @@ fn convert_report(id: String, mut e: CslEntry) -> Result<entry::Report> {
     Ok(r)
 }
 
+#[instrument(level = "info", skip(e))]
 fn convert_working_paper(id: String, mut e: CslEntry) -> Result<entry::Report> {
     let author = e.require_field_then(csl::AUTHOR, convert_name_list)?;
     let title = take_string_field(&mut e, csl::TITLE)?;
@@ -254,6 +265,7 @@ fn convert_working_paper(id: String, mut e: CslEntry) -> Result<entry::Report> {
     Ok(r)
 }
 
+#[instrument(level="info", skip(s), fields(s=?s.as_ref()))]
 fn parse_arxiv_category(s: impl AsRef<str>) -> Result<String> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"\(([a-z]+\.[A-Z]+)\)").unwrap();
@@ -266,6 +278,7 @@ fn parse_arxiv_category(s: impl AsRef<str>) -> Result<String> {
     bail!("failed to parse arXiv category: {}", s);
 }
 
+#[instrument(level = "info", skip(e))]
 fn convert_arxiv_paper(id: String, mut e: CslEntry) -> Result<entry::Misc> {
     let author = e.require_field_then(csl::AUTHOR, convert_name_list)?;
     let title = take_string_field(&mut e, csl::TITLE)?;
