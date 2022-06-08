@@ -35,6 +35,17 @@ fn pop_print_isbn(entry: &mut CslEntry) -> Option<JsonValue> {
     None
 }
 
+fn field_value_hacks(entry: &mut serde_json::Map<String, JsonValue>) {
+    for field in [csl::CONTAINER_TITLE, csl::CONTAINER_TITLE_SHORT] {
+        if let Some(JsonValue::String(s)) = entry.get_mut(field) {
+            if s.contains("&amp;") {
+                let new = s.replace("&amp;", "&");
+                *s = new;
+            }
+        }
+    }
+}
+
 #[instrument(level = "error", name = "clean", skip(entry))]
 fn clean_json(entry: &mut JsonValue) {
     let entry = match entry.as_object_mut() {
@@ -145,6 +156,8 @@ fn clean_json(entry: &mut JsonValue) {
             entry.insert("genre".into(), "arxiv".into());
         }
     }
+
+    field_value_hacks(entry);
 }
 
 fn clean_name_fields(author: &mut JsonValue) {
