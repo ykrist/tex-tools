@@ -63,16 +63,15 @@ where
 }
 
 pub fn logging_init() {
-    use tracing_subscriber::{fmt, prelude::*, EnvFilter};
+    use tracing_subscriber::{filter::LevelFilter, fmt, prelude::*, EnvFilter};
 
     tracing_subscriber::registry()
+        .with(fmt::layer().with_writer(std::io::stderr).without_time())
         .with(
-            fmt::layer()
-                // .pretty()
-                .with_writer(std::io::stderr)
-                .without_time(),
+            EnvFilter::builder()
+                .with_default_directive(LevelFilter::INFO.into())
+                .from_env_lossy(),
         )
-        .with(EnvFilter::from_default_env())
         .init();
 }
 
