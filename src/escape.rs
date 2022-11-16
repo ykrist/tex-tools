@@ -35,7 +35,7 @@ fn classify_char(c: char) -> CharKind {
         'ł' => Escape(r"\l{}"),
         'ø' => Escape(r"\o{}"),
         'Ø' => Escape(r"\O{}"),
-        'ı' => Escape(r"\i"),
+        'ı' => Escape(r"{\i}"),
         '\u{0300}' => Combining(r"\`"),
         '\u{0301}' => Combining(r"\'"),
         '\u{0302}' => Combining(r"\^"),
@@ -243,7 +243,8 @@ mod tests {
 
     #[test]
     fn dotless_i() {
-        cmp("ı", r"\i")
+        cmp("ı", r"{\i}");
+        cmp("ıfoo", r"{\i}foo");
     }
 
     #[test]
