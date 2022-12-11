@@ -187,6 +187,12 @@ pub mod types {
     #[derive(Debug, Clone)]
     pub struct List<T>(pub Vec<T>);
 
+    impl<T> List<T> {
+        pub fn singleton(val: T) -> Self {
+            List(vec![val])
+        }
+    }
+
     impl<T> ToBiblatex for List<T> {
         fn biblatex<'a>(&'a self) -> FmtBiblatex<'a, Self> {
             FmtBiblatex(self)
@@ -398,6 +404,7 @@ pub mod entry {
         InProceedings(InProceedings),
         Report(Report),
         Misc(Misc),
+        Book(Book),
     }
 
     impl_tobiblatex! {Entry}
@@ -410,6 +417,7 @@ pub mod entry {
                 Entry::InProceedings(e) => &e.id,
                 Entry::Report(e) => &e.id,
                 Entry::Misc(e) => &e.id,
+                Entry::Book(e) => &e.id,
             }
         }
     }
@@ -422,6 +430,7 @@ pub mod entry {
                 Entry::InProceedings(e) => e.biblatex().fmt(f),
                 Entry::Report(e) => e.biblatex().fmt(f),
                 Entry::Misc(e) => e.biblatex().fmt(f),
+                Entry::Book(e) => e.biblatex().fmt(f),
             }
         }
     }
@@ -598,5 +607,51 @@ pub mod entry {
         url,
         url_date,
         version,
+    }
+
+    entry_struct! {
+        Book "book";
+        author,
+        title,
+        year,
+        ;
+        addendum,
+        // afterword,
+        annotator,
+        chapter,
+        commentator,
+        doi,
+        edition,
+        editor,
+        // editora,
+        // editorb,
+        // editorc,
+        // eprint,
+        // eprintclass,
+        // eprinttype,
+        // foreword,
+        // introduction,
+        isbn,
+        // language,
+        location,
+        // mainsubtitle,
+        // maintitle,
+        // maintitleaddon,
+        note,
+        number,
+        // origlanguage,
+        pages,
+        // pagetotal,
+        part,
+        publisher,
+        pubstate,
+        series,
+        subtitle,
+        // titleaddon,
+        // translator,
+        url,
+        // urldate,
+        volume,
+        volumes,
     }
 }

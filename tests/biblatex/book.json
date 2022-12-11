@@ -1,0 +1,20 @@
+{
+    "id": "minkowski1910",
+    "author": [
+        {
+            "family": "Minkowski",
+            "given": "Hermann"
+        }
+    ],
+    "issued": {
+        "date-parts": [
+            [
+                1910
+            ]
+        ]
+    },
+    "publisher": "B. G. Teubner",
+    "publisher-place": "Leipzig",
+    "title": "Geometrie der Zahlen",
+    "type": "book"
+}

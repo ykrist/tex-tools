@@ -231,7 +231,9 @@ fn convert_conference_paper(id: String, mut e: CslEntry) -> Result<entry::InProc
     let mut c = entry::InProceedings::new(id, author, title, book_title, year);
     c.month = date.month;
     c.doi = take_optional_string_field(&mut e, csl::DOI)?;
-    c.publisher = take_optional_string_field(&mut e, csl::PUBLISHER)?.map(|p| types::List(vec![p]));
+    c.publisher = take_optional_string_field(&mut e, csl::PUBLISHER)?.map(types::List::singleton);
+    c.location =
+        take_optional_string_field(&mut e, csl::PUBLISHER_PLACE)?.map(types::List::singleton);
     Ok(c)
 }
 
@@ -307,6 +309,23 @@ fn convert_arxiv_paper(id: String, mut e: CslEntry) -> Result<entry::Misc> {
     Ok(b)
 }
 
+fn convert_book(id: String, mut e: CslEntry) -> Result<entry::Book> {
+    let author = e.require_field_then(csl::AUTHOR, convert_name_list)?;
+    let title = take_string_field(&mut e, csl::TITLE)?;
+    let date = e.require_field_then(csl::ISSUED, convert_date)?;
+    let mut b = entry::Book::new(id, author, title, date.year);
+
+    b.chapter = take_optional_string_field(&mut e, csl::CHAPTER_NUMBER)?;
+    b.doi = take_optional_string_field(&mut e, csl::DOI)?;
+    b.isbn = take_optional_string_field(&mut e, csl::ISBN)?;
+    b.publisher = take_optional_string_field(&mut e, csl::PUBLISHER)?.map(types::List::singleton);
+    b.location =
+        take_optional_string_field(&mut e, csl::PUBLISHER_PLACE)?.map(types::List::singleton);
+    b.pages = e.try_field_then(csl::PAGE, convert_page_range)?;
+
+    Ok(b)
+}
+
 #[instrument(level = "error", skip(e), fields(id))]
 pub fn csl_to_biblatex(mut e: CslEntry) -> Result<Entry> {
     let id = e.require_field(csl::ID)?.expect_string()?;
@@ -329,6 +348,7 @@ pub fn csl_to_biblatex(mut e: CslEntry) -> Result<Entry> {
             "thesis" => convert_thesis(id, e).map(Entry::Thesis),
             "paper-conference" => convert_conference_paper(id, e).map(Entry::InProceedings),
             "report" => convert_report(id, e).map(Entry::Report),
+            "book" => convert_book(id, e).map(Entry::Book),
             ty => bail!("no BibLaTex entry type for CSL type {}", ty),
         }
     }
@@ -426,5 +446,10 @@ mod tests {
     #[test]
     fn arxiv() -> Result<()> {
         check_output("arxiv")
+    }
+
+    #[test]
+    fn book() -> Result<()> {
+        check_output("book")
     }
 }
